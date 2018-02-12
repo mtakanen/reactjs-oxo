@@ -4,6 +4,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 Project demonstrates how to use React Javascript library for building user interfaces. OXO is a classic tic-tac-toe game against the computer. Game comes
 with heuristic AI based on near perfect-game strategy described [here](https://en.wikipedia.org/wiki/Tic-tac-toe).
 
+Playable game is deployed [here](http://mtakanen.github.io/).
+
 ## Supported Browsers
 
 By default, the generated project uses the latest version of React.
