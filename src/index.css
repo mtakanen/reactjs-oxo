@@ -1,0 +1,126 @@
+body {
+  font: 14px "Century Gothic", Futura, sans-serif;
+  margin: 20px;
+}
+
+ol, ul {
+  padding-left: 30px;
+}
+
+.game {
+}
+
+.points {
+  margin-bottom: 10px;
+  width: 100px;
+  color: #aaa;
+}
+
+.points-left {
+  float:left;
+  width: 50%;
+}
+
+.points-right {
+  float:right;
+}
+
+.points::after {
+  clear:both;
+  content: "";
+  display: table;
+}
+
+.game-info {
+  padding-left: 20px;
+  padding-bottom: 5px;
+}
+
+.board-row:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+
+.status {
+  margin-bottom: 10px;
+}
+
+.square {
+  background: #fff;
+  border: 1px solid #000;
+  float: left;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 34px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 34px;
+}
+
+.line-0 {
+  background: linear-gradient(0deg,
+                              transparent 0%,
+                              calc(50% - 2px),
+                              black calc(50% - 2px),
+                              black calc(50% + 2px),
+                              calc(50% + 2px),
+                              transparent 100%);
+}
+
+.line-45 {
+  background: linear-gradient(45deg,
+                              transparent 0%,
+                              calc(50% - 2px),
+                              black calc(50% - 2px),
+                              black calc(50% + 2px),
+                              calc(50% + 2px),
+                              transparent 100%);
+}
+
+.line-90 {
+  background: linear-gradient(90deg,
+  	                          transparent 0%,
+                              calc(50% - 2px),
+                              black calc(50% - 2px),
+                              black calc(50% + 2px),
+                              calc(50% + 2px),
+  	                          transparent 100%);
+}
+
+.line-135 {
+  background: linear-gradient(135deg,
+  	                          transparent 0%,
+                              calc(50% - 2px),
+                              black calc(50% - 2px),
+                              black calc(50% + 2px),
+                              calc(50% + 2px),
+  	                          transparent 100%);
+}
+
+.square:focus {
+  outline: none;
+}
+
+.kbd-navigation .square:focus {
+  background: #ddd;
+}
+
+.game-board {
+  display: flex;
+  flex-direction: row;
+}
+
+.reset {
+  float: left;
+  font-weight: bold;
+  line-height: 34px;
+  height: 34px;
+  width: 100px;
+  margin-top: 5px;
+  padding: 0;
+  text-align: center;
+}
