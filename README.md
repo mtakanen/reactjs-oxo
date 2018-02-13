@@ -1,8 +1,7 @@
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 # OXO
-Project demonstrates how to use React Javascript library for building user interfaces. OXO is a classic tic-tac-toe game against the computer. Game comes
-with heuristic AI based on near perfect-game strategy described [here](https://en.wikipedia.org/wiki/Tic-tac-toe).
+Project demonstrates how to use React Javascript library for building user interfaces. OXO is a classic tic-tac-toe game against the computer. Game uses a heuristic algorithm based on five different game strategies described [here](https://en.wikipedia.org/wiki/Tic-tac-toe). Game starts with naive (random) strategy. More advanced strategies are applied when opponent (user) wins games. Most advanced strategy yields almost perfect game. Algorihm also adapts (downshifts) to situation where oppoenent has lost several games.
 
 Playable game is deployed [here](http://mtakanen.github.io/).
 
