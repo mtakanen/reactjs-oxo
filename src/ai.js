@@ -48,7 +48,7 @@ class Ai {
     const opponentMark = this.mark ? 'X' : 'O';
     const diff = points[this.mark] - points[opponentMark];
     if(previousWinnerMark === opponentMark &&
-        diff < 0 && this.strategyId < STRATEGIES.length)
+        diff < 0 && this.strategyId < STRATEGIES.length-1)
       change = 1;
     else if(previousWinnerMark === opponentMark && this.strategyId === 0)
       change = 1;
