@@ -10,13 +10,19 @@ class Ai {
   }
 
   bindThis(methods) {
+    this.playStrategy = this.playStrategy.bind(this);
     this.winOrBlock = this.winOrBlock.bind(this);
     this.side = this.side.bind(this);
     this.corner = this.corner.bind(this);
     this.oppositeCorner = this.oppositeCorner.bind(this);
   }
 
-  playStrategy(squares, callback) {
+  playTurn(squares, callback) {
+    const square = this.playStrategy(this.strategyId, squares, callback);
+    waitAndCommit(square, callback);
+  }
+
+  playStrategy(strategy, squares, callback) {
     const strategyMethods = {
       naive:    [this.any],
       basic:    [this.winOrBlock, this.side, this.any],
@@ -26,26 +32,32 @@ class Ai {
                    this.corner, this.any],
     };
 
-    console.log('strategy: ',STRATEGIES[this.strategyId]);
-    const methods = strategyMethods[STRATEGIES[this.strategyId]];
+    const methods = strategyMethods[STRATEGIES[strategy]];
     for(let i=0; i<methods.length; i++) {
       const square = methods[i](squares);
       if(square !== null) {
-        waitAndCommit(callback, square);
-        return;
+        return square;
       }
     }
   }
 
-  revisitStrategy(points, previousWinnerMark) {
+  changeStrategy(points, previousWinnerMark) {
     // TODO: when ai has got a big lead, strategy drops and stays naive
     // as long as opponent reaches points
+    let change = 0;
     const opponentMark = this.mark ? 'X' : 'O';
     const diff = points[this.mark] - points[opponentMark];
-    if(diff < 0 && this.strategyId < STRATEGIES.length)
-      this.strategyId+=1;
+    if(previousWinnerMark === opponentMark &&
+        diff < 0 && this.strategyId < STRATEGIES.length)
+      change = 1;
+    else if(previousWinnerMark === opponentMark && this.strategyId === 0)
+      change = 1;
     else if( previousWinnerMark === this.mark && diff > 2 && this.strategyId > 0)
-      this.strategyId-=1;
+      change = -1;
+
+    // increment/decrement strategyId
+    this.strategyId += change;
+    return change;
   }
 
   center(squares) {
@@ -124,14 +136,14 @@ class Ai {
 
     if(alt.length === 1) {
       return alt[0][0];
-    } else if(alt.length === 2) {
+    } else if(alt.length > 1) {
       // prefer own winning line
-      for(let i = 0; i< alt.length; i++) {
-        if (squares[alt[i][1]] === this.mark) {
-          return alt[i][0];
+      for(let j = 0; j< alt.length; j++) {
+        if (squares[alt[j][1]] === this.mark) {
+          return alt[j][0];
         }
       }
-      // oppponen has a fork! ai will lose game, block either
+      // either player has a fork! choose either square
       return alt[0][0];
     }
     return null;
@@ -174,7 +186,7 @@ class Line {
 const MIN_DELAY = 300;
 const MAX_DELAY = 1000;
 
-function waitAndCommit(callback, square) {
+function waitAndCommit(square, callback) {
     const delay = Math.random()*(MAX_DELAY-MIN_DELAY);
     setTimeout(() => {
       callback(square);

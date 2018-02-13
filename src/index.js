@@ -128,7 +128,7 @@ class Game extends React.Component {
     if (winningLine !== null) {
       const points = this.state.points;
       points[winningLine.mark] +=1;
-      this.ai.revisitStrategy(points, winningLine.mark);
+      this.ai.changeStrategy(points, winningLine.mark);
       gameEnded = true;
       this.setState({
         points: points,
@@ -157,7 +157,7 @@ class Game extends React.Component {
   componentDidUpdate() {
     // lifecycle callback when component state has updated
     if(!this.state.xIsNext && !this.state.gameEnded)
-      this.ai.playStrategy(this.state.squares, this.commitTurn);
+      this.ai.playTurn(this.state.squares, this.commitTurn);
       //this.ai.turn(this.state.squares, this.commitTurn);
   }
 
