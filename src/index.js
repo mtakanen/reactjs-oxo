@@ -101,22 +101,12 @@ class OXO extends React.Component {
   // stateful component for game
   constructor(props) {
     super(props);
-    //const squares = this.initSquares();
     this.ai = new Ai(this.game, 'O');
     this.game = new Game(BOARD_SIZE, LINE_LENGHT, this.ai);
     this.state = {
       isWelcome: true,
     };
     this.updateCallback = this.updateCallback.bind(this);
-  }
-
-  initSquares() {
-    // for welcome screen only!
-    const squares = Array(BOARD_SIZE * BOARD_SIZE).fill(null);
-    squares[3] = 'O';
-    squares[4] = 'X';
-    squares[5] = 'O';
-    return squares;
   }
 
   handleClick(i) {
