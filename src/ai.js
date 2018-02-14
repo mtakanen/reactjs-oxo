@@ -124,8 +124,8 @@ class Ai {
   winOrBlock(game) {
     let alt = [];
     const squares = game.squares;
-    for (let i = 0; i < game.winningLines.length; i++) {
-      const [a, b, c] = game.winningLines[i].squares;
+    for (let i = 0; i < game.lines.length; i++) {
+      const [a, b, c] = game.lines[i].squares;
       if ( squares[c] && squares[c] === squares[b] && !squares[a] )
         alt.push([a,b]);
       if ( squares[a] && squares[a] === squares[c] && !squares[b] )

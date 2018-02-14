@@ -101,17 +101,13 @@ class OXO extends React.Component {
   // stateful component for game
   constructor(props) {
     super(props);
-    const squares = this.initSquares();
-    this.game = new Game(BOARD_SIZE, LINE_LENGHT);
+    //const squares = this.initSquares();
     this.ai = new Ai(this.game, 'O');
-    this.commitTurn = this.commitTurn.bind(this);
+    this.game = new Game(BOARD_SIZE, LINE_LENGHT, this.ai);
     this.state = {
-      squares: squares,
-      gameEnded : true,
-      xIsNext: true,
-      points: {'X':0, 'O':0},
       isWelcome: true,
     };
+    this.updateCallback = this.updateCallback.bind(this);
   }
 
   initSquares() {
@@ -123,57 +119,32 @@ class OXO extends React.Component {
     return squares;
   }
 
-  commitTurn(i) {
-    // commits turn in square i
-    const squares = this.game.squares.slice();
-    const points = this.state.points;
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
-    this.game.setSquares(this.state.squares);
-    let gameEnded = false;
-    const winningLine = this.game.calculateWinner(squares);
-    if (winningLine !== null) {
-      points[winningLine.mark] +=1;
-      this.ai.changeStrategy(points, winningLine.mark);
-      gameEnded = true;
-    } else if(this.game.isFull(squares)) {
-      gameEnded = true;
-    }
-
-    // TODO: move squares to Game. How to keep in sync?
-    this.setState({
-      squares: squares,
-      gameEnded : gameEnded,
-      points: points,
-      xIsNext: !this.state.xIsNext,
-    });
-
-  }
-
   handleClick(i) {
     // handles click in square i.
-    if (!this.state.xIsNext || this.state.squares[i] || this.state.gameEnded) {
+    if (!this.game.xIsNext || this.game.squares[i] || this.game.hasEnded) {
       return;
     }
-    this.commitTurn(i);
+    this.updateCallback(i);
   }
 
   handleReset() {
     // callback for reset button click.
-    const squares = this.game.new();
+    this.game.new();
     this.setState({
-      squares: squares,
-      gameEnded: false,
       isWelcome: false,
     });
   }
 
   componentDidUpdate() {
     // lifecycle callback when component state has updated
-    this.game.setSquares(this.state.squares);
-    if(!this.state.xIsNext && !this.state.gameEnded)
-      this.ai.playTurn(this.game, this.commitTurn);
+    if(!this.game.xIsNext && !this.game.hasEnded)
+      this.ai.playTurn(this.game, this.updateCallback);
   }
 
+  updateCallback(square) {
+    this.game.commitTurn(square);
+    this.setState(this.state); // hack to re-render with Game state
+  }
 
   render() {
     let status;
@@ -182,16 +153,16 @@ class OXO extends React.Component {
     if(this.state.isWelcome) {
       status = 'Let\'s play';
     } else {
-      winningLine = this.game.calculateWinner(this.state.squares);
+      winningLine = this.game.calculateWinner();
       if (winningLine !== null) {
         if(winningLine.mark !== this.ai.playMark)
           status = 'You win!';
         else
           status = 'AI wins!';
-      } else if(this.game.isFull(this.state.squares)) {
+      } else if(this.game.isFull()) {
         status = 'It\'s a tie!'
       } else {
-        status = this.state.xIsNext ? 'Your turn' : 'My turn';
+        status = this.game.xIsNext ? 'Your turn' : 'My turn';
       }
     }
 
@@ -199,7 +170,7 @@ class OXO extends React.Component {
     return (
       <div className="game">
         <Points
-          points={this.state.points}
+          points={this.game.points}
         />
         <div className="game-info">
           <div>{status}</div>
@@ -207,14 +178,14 @@ class OXO extends React.Component {
         <div>
           <div className="game-board">
             <Board
-              squares={this.state.squares}
+              squares={this.game.squares}
               winningLine={winningLine}
               onClick={(i) => this.handleClick(i)}
             />
           </div>
           <Reset className="reset"
             value='New game'
-            show={this.state.gameEnded}
+            show={this.game.hasEnded}
             onClick={() => this.handleReset()}
           />
         </div>

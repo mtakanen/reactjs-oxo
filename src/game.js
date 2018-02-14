@@ -1,28 +1,43 @@
 class Game {
-  constructor(boardSize, lineLength) {
+
+  constructor(boardSize, lineLength, ai) {
     this.boardSize = boardSize;
     this.lineLength = lineLength;
+    this.ai = ai;
     this.squares = [];
-    this.new(boardSize, lineLength);
+    this.hasEnded = true;
     this.xIsNext = true;
-
-    // TODO: -> lines
-    this.winningLines = this.combineLines(boardSize, lineLength);
+    this.points = {'X':0, 'O':0}
+    this.lines = this.combineLines(boardSize, lineLength);
+    //this.commitTurn = this.commitTurn.bind(this);
   }
 
   new() {
     this.squares = Array(this.boardSize * this.lineLength).fill(null);
-    return this.squares;
+    this.hasEnded = false;
   }
 
-  setSquares(squares) {
-    this.squares = squares;
+  commitTurn(square) {
+    // commits turn in square i
+    //const squares = this.squares.slice();
+    const points = this.points;
+    this.squares[square] = this.xIsNext ? 'X' : 'O';
+    const winningLine = this.calculateWinner();
+    if (winningLine !== null) {
+      points[winningLine.mark] +=1;
+      this.ai.changeStrategy(points, winningLine.mark);
+      this.hasEnded = true;
+    } else if(this.isFull()) {
+      this.hasEnded = true;
+    }
+
+    this.xIsNext = !this.xIsNext;
   }
 
-  calculateWinner(squares) {
-
-    for (let i = 0; i < this.winningLines.length; i++) {
-      const line = this.winningLines[i];
+  calculateWinner() {
+    const squares = this.squares;
+    for (let i = 0; i < this.lines.length; i++) {
+      const line = this.lines[i];
       const [a, b, c] = line.squares;
       if (squares[a] && squares[a] === squares[b] &&
           squares[a] === squares[c]) {
@@ -33,6 +48,14 @@ class Game {
     return null;
   }
 
+  isFull() {
+    for(let i=0; i<this.squares.length; i++) {
+      if(!this.squares[i])
+        return false;
+    }
+    return true;
+  }
+
   isEmpty() {
     for(let i=0; i<this.squares.length; i++) {
       if(this.squares[i])
@@ -41,13 +64,7 @@ class Game {
     return true;
   }
 
-  isFull(squares) {
-    for(let i=0; i<squares.length; i++) {
-      if(!squares[i])
-        return false;
-    }
-    return true;
-  }
+
 
   combineLines(boardSize, lineLength) {
     var lines = []
