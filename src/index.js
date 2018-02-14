@@ -149,9 +149,11 @@ class OXO extends React.Component {
   render() {
     let status;
     let winningLine;
+    let squares = this.game.squares;
 
     if(this.state.isWelcome) {
       status = 'Let\'s play';
+      squares[0] = 'O'; squares[4] = 'X'; squares[8] = 'O';
     } else {
       winningLine = this.game.calculateWinner();
       if (winningLine !== null) {
