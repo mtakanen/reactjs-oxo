@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import Game from './game.js';
 import Ai from './ai.js';
 
 const BOARD_SIZE = 3;
@@ -96,23 +97,25 @@ class Board extends React.Component {
 }
 
 
-class Game extends React.Component {
+class OXO extends React.Component {
   // stateful component for game
   constructor(props) {
     super(props);
     const squares = this.initSquares();
-    this.ai = new Ai(BOARD_SIZE, LINE_LENGHT, 'O');
+    this.game = new Game(BOARD_SIZE, LINE_LENGHT);
+    this.ai = new Ai(this.game, 'O');
     this.commitTurn = this.commitTurn.bind(this);
     this.state = {
       squares: squares,
+      gameEnded : true,
       xIsNext: true,
-      gameEnded: true,
       points: {'X':0, 'O':0},
       isWelcome: true,
     };
   }
 
   initSquares() {
+    // for welcome screen only!
     const squares = Array(BOARD_SIZE * BOARD_SIZE).fill(null);
     squares[3] = 'O';
     squares[4] = 'X';
@@ -122,27 +125,26 @@ class Game extends React.Component {
 
   commitTurn(i) {
     // commits turn in square i
-    const squares = this.state.squares.slice();
+    const squares = this.game.squares.slice();
+    const points = this.state.points;
     squares[i] = this.state.xIsNext ? 'X' : 'O';
+    this.game.setSquares(this.state.squares);
     let gameEnded = false;
-    const winningLine = this.ai.calculateWinner(squares);
+    const winningLine = this.game.calculateWinner(squares);
     if (winningLine !== null) {
-      const points = this.state.points;
       points[winningLine.mark] +=1;
       this.ai.changeStrategy(points, winningLine.mark);
       gameEnded = true;
-      this.setState({
-        points: points,
-        gameEnded:gameEnded,
-      });
-    } else if(this.ai.isFull(squares)) {
+    } else if(this.game.isFull(squares)) {
       gameEnded = true;
     }
 
+    // TODO: move squares to Game. How to keep in sync?
     this.setState({
       squares: squares,
+      gameEnded : gameEnded,
+      points: points,
       xIsNext: !this.state.xIsNext,
-      gameEnded: gameEnded,
     });
 
   }
@@ -155,22 +157,23 @@ class Game extends React.Component {
     this.commitTurn(i);
   }
 
-  componentDidUpdate() {
-    // lifecycle callback when component state has updated
-    if(!this.state.xIsNext && !this.state.gameEnded)
-      this.ai.playTurn(this.state.squares, this.commitTurn);
-      //this.ai.turn(this.state.squares, this.commitTurn);
-  }
-
   handleReset() {
     // callback for reset button click.
-    const squares = Array(BOARD_SIZE * BOARD_SIZE).fill(null);
+    const squares = this.game.new();
     this.setState({
       squares: squares,
       gameEnded: false,
       isWelcome: false,
     });
   }
+
+  componentDidUpdate() {
+    // lifecycle callback when component state has updated
+    this.game.setSquares(this.state.squares);
+    if(!this.state.xIsNext && !this.state.gameEnded)
+      this.ai.playTurn(this.game, this.commitTurn);
+  }
+
 
   render() {
     let status;
@@ -179,13 +182,13 @@ class Game extends React.Component {
     if(this.state.isWelcome) {
       status = 'Let\'s play';
     } else {
-      winningLine = this.ai.calculateWinner(this.state.squares);
+      winningLine = this.game.calculateWinner(this.state.squares);
       if (winningLine !== null) {
         if(winningLine.mark !== this.ai.playMark)
           status = 'You win!';
         else
           status = 'AI wins!';
-      } else if(this.ai.isFull(this.state.squares)) {
+      } else if(this.game.isFull(this.state.squares)) {
         status = 'It\'s a tie!'
       } else {
         status = this.state.xIsNext ? 'Your turn' : 'My turn';
@@ -223,6 +226,6 @@ class Game extends React.Component {
 // ========================================
 
 ReactDOM.render(
-  <Game />,
+  <OXO />,
   document.getElementById('root')
 );
