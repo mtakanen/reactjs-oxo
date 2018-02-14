@@ -4,6 +4,7 @@ import './index.css';
 import Ai from './ai.js';
 
 const BOARD_SIZE = 3;
+const LINE_LENGHT = 3;
 
 function Points(props) {
   // stateless component for game points
@@ -49,7 +50,7 @@ function Reset(props) {
 }
 
 class Board extends React.Component {
-  // stateless componen for game board
+  // stateless component for game board
   renderSquare(i) {
     let lineAngle = null;
     if(this.props.winningLine && this.props.winningLine.squares.includes(i)) {
@@ -100,7 +101,7 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
     const squares = this.initSquares();
-    this.ai = new Ai(BOARD_SIZE, 'O');
+    this.ai = new Ai(BOARD_SIZE, LINE_LENGHT, 'O');
     this.commitTurn = this.commitTurn.bind(this);
     this.state = {
       squares: squares,
@@ -180,7 +181,7 @@ class Game extends React.Component {
     } else {
       winningLine = this.ai.calculateWinner(this.state.squares);
       if (winningLine !== null) {
-        if(winningLine.mark !== this.ai.mark)
+        if(winningLine.mark !== this.ai.playMark)
           status = 'You win!';
         else
           status = 'AI wins!';

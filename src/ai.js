@@ -1,9 +1,9 @@
 const STRATEGIES = ['naive','basic','medium','advanced','pro'];
 
 class Ai {
-  constructor(boardSize, mark) {
-    this.mark = mark;
-    this.winningLines = combineLines(boardSize);
+  constructor(boardSize, lineLength, playMark) {
+    this.playMark = playMark;
+    this.winningLines = combineLines(boardSize, lineLength);
     this.strategyId = 0;
     //bind this to methods that relay on it
     this.bindThis();
@@ -45,14 +45,14 @@ class Ai {
     // TODO: when ai has got a big lead, strategy drops and stays naive
     // as long as opponent reaches points
     let change = 0;
-    const opponentMark = this.mark ? 'X' : 'O';
-    const diff = points[this.mark] - points[opponentMark];
+    const opponentMark = this.playMark ? 'X' : 'O';
+    const diff = points[this.playMark] - points[opponentMark];
     if(previousWinnerMark === opponentMark &&
         diff < 0 && this.strategyId < STRATEGIES.length-1)
       change = 1;
     else if(previousWinnerMark === opponentMark && this.strategyId === 0)
       change = 1;
-    else if( previousWinnerMark === this.mark && diff > 2 && this.strategyId > 0)
+    else if( previousWinnerMark === this.playMark && diff > 2 && this.strategyId > 0)
       change = -1;
 
     // increment/decrement strategyId
@@ -89,7 +89,7 @@ class Ai {
   }
 
   oppositeCorner(squares) {
-    const opponentMark = this.mark ? 'X' : 'O';
+    const opponentMark = this.playMark ? 'X' : 'O';
     const corners = [[0,8], [2,6], [6,2], [8,0]];
     for(let i=0; i<corners.length; i++) {
       if(squares[corners[i][0]] === opponentMark &&
@@ -139,11 +139,11 @@ class Ai {
     } else if(alt.length > 1) {
       // prefer own winning line
       for(let j = 0; j< alt.length; j++) {
-        if (squares[alt[j][1]] === this.mark) {
+        if (squares[alt[j][1]] === this.playMark) {
           return alt[j][0];
         }
       }
-      // either player has a fork! choose either square
+      // opponent has a fork! it's futile but choose either.
       return alt[0][0];
     }
     return null;
@@ -201,14 +201,13 @@ function isEmpty(squares) {
   return true;
 }
 
-function combineLines(size) {
+function combineLines(boardSize, lineLength) {
   var lines = []
-  const n = 3;
-  var board = squareMatrix(size);
+  var board = squareMatrix(boardSize);
 
-  for( let i = 0; i < size; i++) {
-    for (let j = 0; j < size; j++) {
-      const linesFound = findLines(board, i, j, n)
+  for( let i = 0; i < boardSize; i++) {
+    for (let j = 0; j < boardSize; j++) {
+      const linesFound = findLines(board, i, j, lineLength)
       if (linesFound.length > 0)
         lines.push.apply(lines,linesFound);  // push.apply = extend
     }
