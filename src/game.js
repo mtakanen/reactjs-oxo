@@ -8,8 +8,7 @@ class Game {
     this.hasEnded = true;
     this.xIsNext = true;
     this.points = {'X':0, 'O':0}
-    this.lines = this.combineLines(boardSize, lineLength);
-    //this.commitTurn = this.commitTurn.bind(this);
+    this.lines = new Board().combineLines(boardSize, lineLength);
   }
 
   new() {
@@ -63,9 +62,9 @@ class Game {
     }
     return true;
   }
+}
 
-
-
+class Board {
   combineLines(boardSize, lineLength) {
     var lines = []
     var board = this.squareMatrix(boardSize);
