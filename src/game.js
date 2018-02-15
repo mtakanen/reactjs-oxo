@@ -156,7 +156,7 @@ class Game extends React.Component {
 
   handleClick(i) {
     // handles click in square i.
-    if (!this.xIsNext || this.state.squares[i] || this.hasEnded) {
+    if (!this.xIsNext || this.state.squares[i] || this.state.hasEnded) {
       return;
     }
     this.commitTurn(i);
