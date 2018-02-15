@@ -61,14 +61,6 @@ class Ai {
     return change;
   }
 
-  center(squares) {
-    const center = 4;
-    if(!squares[center])
-      return center;
-    else
-      return null;
-  }
-
   any(squares) {
     var freeSquares = [];
     for(let i=0; i<squares.length; i++) {
@@ -78,49 +70,6 @@ class Ai {
     }
     freeSquares.sort(() => Math.random() * 2 - 1);
     return freeSquares[0];
-  }
-
-  opening(squares) {
-    const five = [0,2,4,6,8];
-    if(this.isEmpty(squares)) {
-      five.sort(() => Math.random() * 2 - 1);
-      return five[0];
-    }
-    return null;
-  }
-
-  oppositeCorner(squares) {
-    const opponentMark = this.playMark ? 'X' : 'O';
-    const corners = [[0,8], [2,6], [6,2], [8,0]];
-    for(let i=0; i<corners.length; i++) {
-      if(squares[corners[i][0]] === opponentMark &&
-          squares[corners[i][1]] === null)
-        return corners[i][1];
-    }
-    return null;
-  }
-
-  corner(squares) {
-    const corners = [0,2,6,8];
-    return this.targetSquares(squares, corners);
-  }
-
-  side(squares) {
-    const sides = [1,3,5,7];
-    return this.targetSquares(squares, sides);
-  }
-
-  targetSquares(squares, target) {
-    let emptySquares = [];
-    for(let i=0; i<target.length; i++) {
-      if(squares[target[i]] === null)
-        emptySquares.push(target[i]);
-    }
-    if(emptySquares.length > 0) {
-      emptySquares.sort(() => Math.random() * 2 - 1);
-      return emptySquares[0];
-    } else
-      return null;
   }
 
   winOrBlock(squares) {
@@ -150,17 +99,41 @@ class Ai {
     return null;
   }
 
-  isEmpty(squares) {
-    for(let i=0; i<squares.length; i++) {
-      if(squares[i])
-        return false;
+  opening(squares) {
+    const five = [0,2,4,6,8];
+    if(isEmpty(squares)) {
+      five.sort(() => Math.random() * 2 - 1);
+      return five[0];
     }
-    return true;
+    return null;
   }
 
+  center(squares) {
+    const center = 4;
+    return squares[center] === null ? center : null;
+  }
+
+  corner(squares) {
+    const corners = [0,2,6,8];
+    return targetSquares(squares, corners);
+  }
+
+  side(squares) {
+    const sides = [1,3,5,7];
+    return targetSquares(squares, sides);
+  }
+
+  oppositeCorner(squares) {
+    const opponentMark = this.playMark ? 'X' : 'O';
+    const corners = [[0,8], [2,6], [6,2], [8,0]];
+    for(let i=0; i<corners.length; i++) {
+      if(squares[corners[i][0]] === opponentMark &&
+          squares[corners[i][1]] === null)
+        return corners[i][1];
+    }
+    return null;
+  }
 }
-
-
 
 const MIN_DELAY = 300;
 const MAX_DELAY = 1000;
@@ -170,6 +143,24 @@ function waitAndCommit(square, callback) {
     setTimeout(() => {
       callback(square);
     }, delay);
+}
+
+function isEmpty(squares) {
+  let empty = squares.filter((x) => x !== null);
+  return empty.length === 0 ? true : false;
+}
+
+function targetSquares(squares, target) {
+  let emptySquares = [];
+  for(let i=0; i<target.length; i++) {
+    if(squares[target[i]] === null)
+      emptySquares.push(target[i]);
+  }
+  if(emptySquares.length > 0) {
+    emptySquares.sort(() => Math.random() * 2 - 1);
+    return emptySquares[0];
+  } else
+    return null;
 }
 
 export default Ai;

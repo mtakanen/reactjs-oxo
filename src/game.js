@@ -240,12 +240,10 @@ class Game extends React.Component {
     return null;
   }
 
+
   isFull(squares) {
-    for(let i=0; i<squares.length; i++) {
-      if(!squares[i])
-        return false;
-    }
-    return true;
+    let full=squares.filter((x) => x !== null);
+    return full.length === squares.length ? true : false;
   }
 
 }
