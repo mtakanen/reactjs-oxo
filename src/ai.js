@@ -1,27 +1,29 @@
 const STRATEGIES = ['naive','basic','medium','advanced','pro'];
 
 class Ai {
-  constructor(game, playMark) {
+  constructor(playMark, lines) {
     this.playMark = playMark;
+    this.lines = lines;
     this.strategyId = 0;
-    //bind this to methods that relay on it
     this.bindThis();
   }
 
   bindThis(methods) {
+    //bind this to methods that relay on it
     this.playStrategy = this.playStrategy.bind(this);
     this.winOrBlock = this.winOrBlock.bind(this);
+    this.opening = this.opening.bind(this);
     this.side = this.side.bind(this);
     this.corner = this.corner.bind(this);
     this.oppositeCorner = this.oppositeCorner.bind(this);
   }
 
-  playTurn(game, callback) {
-    const square = this.playStrategy(this.strategyId, game, callback);
+  playTurn(squares, callback) {
+    const square = this.playStrategy(this.strategyId, squares, callback);
     waitAndCommit(square, callback);
   }
 
-  playStrategy(strategy, game, callback) {
+  playStrategy(strategy, squares, callback) {
     const strategyMethods = {
       naive:    [this.any],
       basic:    [this.winOrBlock, this.side, this.any],
@@ -33,7 +35,7 @@ class Ai {
 
     const methods = strategyMethods[STRATEGIES[strategy]];
     for(let i=0; i<methods.length; i++) {
-      const square = methods[i](game);
+      const square = methods[i](squares);
       if(square !== null) {
         return square;
       }
@@ -59,18 +61,18 @@ class Ai {
     return change;
   }
 
-  center(game) {
+  center(squares) {
     const center = 4;
-    if(!game.squares[center])
+    if(!squares[center])
       return center;
     else
       return null;
   }
 
-  any(game) {
+  any(squares) {
     var freeSquares = [];
-    for(let i=0; i<game.squares.length; i++) {
-      if(game.squares[i] === null) {
+    for(let i=0; i<squares.length; i++) {
+      if(squares[i] === null) {
         freeSquares.push(i);
       }
     }
@@ -78,34 +80,34 @@ class Ai {
     return freeSquares[0];
   }
 
-  opening(game) {
+  opening(squares) {
     const five = [0,2,4,6,8];
-    if(game.isEmpty()) {
+    if(this.isEmpty(squares)) {
       five.sort(() => Math.random() * 2 - 1);
       return five[0];
     }
     return null;
   }
 
-  oppositeCorner(game) {
+  oppositeCorner(squares) {
     const opponentMark = this.playMark ? 'X' : 'O';
     const corners = [[0,8], [2,6], [6,2], [8,0]];
     for(let i=0; i<corners.length; i++) {
-      if(game.squares[corners[i][0]] === opponentMark &&
-          game.squares[corners[i][1]] === null)
+      if(squares[corners[i][0]] === opponentMark &&
+          squares[corners[i][1]] === null)
         return corners[i][1];
     }
     return null;
   }
 
-  corner(game) {
+  corner(squares) {
     const corners = [0,2,6,8];
-    return this.targetSquares(game.squares, corners);
+    return this.targetSquares(squares, corners);
   }
 
-  side(game) {
+  side(squares) {
     const sides = [1,3,5,7];
-    return this.targetSquares(game.squares, sides);
+    return this.targetSquares(squares, sides);
   }
 
   targetSquares(squares, target) {
@@ -121,11 +123,10 @@ class Ai {
       return null;
   }
 
-  winOrBlock(game) {
+  winOrBlock(squares) {
     let alt = [];
-    const squares = game.squares;
-    for (let i = 0; i < game.lines.length; i++) {
-      const [a, b, c] = game.lines[i].squares;
+    for (let i = 0; i < this.lines.length; i++) {
+      const [a, b, c] = this.lines[i].squares;
       if ( squares[c] && squares[c] === squares[b] && !squares[a] )
         alt.push([a,b]);
       if ( squares[a] && squares[a] === squares[c] && !squares[b] )
@@ -149,6 +150,13 @@ class Ai {
     return null;
   }
 
+  isEmpty(squares) {
+    for(let i=0; i<squares.length; i++) {
+      if(squares[i])
+        return false;
+    }
+    return true;
+  }
 
 }
 
