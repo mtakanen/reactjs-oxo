@@ -5,7 +5,8 @@ body {
 
 
 .game {
-  margin: 20px;
+  margin-top: 20px;
+  margin-left: 50px;
 }
 
 .points {
