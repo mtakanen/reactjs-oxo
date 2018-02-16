@@ -1,26 +1,37 @@
 import React from 'react';
 import './index.css';
+import './w3.css';
 import Ai from './ai.js';
 
-function Points(props) {
-  // stateless component for game points
-  return (
-    <div className="points">
-      <div className="points-left">
-        X: {props.points['X'] ? props.points['X'] : '–'}
-      </div>
-      <div className="points-right">
-        O: {props.points['O'] ? props.points['O'] : '–'}
-      </div>
-    </div>
-  );
-}
 
-function Strategy(props) {
-  //TODO: render strategy as a vertical bar
+function Progress(props) {
+  const width = props.progress > 0 ? props.progress*25 +'%' : '5%';
+  const style = {
+    height: "22px",
+    width: width,
+  };
+
+  const color = {
+    0: "w3-light-grey",
+    1: "w3-green",
+    2: "w3-blue",
+    3: "w3-orange",
+    4: "w3-red",
+  }
+
+  const classes = "w3-center " +color[props.progress];
+  let progress = [];
+  if (props.showProgress) {
+    progress.push(
+        <div key="bar" className="w3-light-grey">
+          <div className={classes} style={style}>Difficulty</div>
+        </div>
+      );
+  }
+
   return (
-    <div className="strategy">
-      {props.strategy}
+    <div className="progress">
+      {progress}
     </div>
   );
 }
@@ -118,7 +129,7 @@ class Game extends React.Component {
       squares: squares,
       hasEnded: true,
       isWelcome: true,
-      strategy: 0,
+      progress: 0,
     };
   }
 
@@ -135,7 +146,7 @@ class Game extends React.Component {
     const winningLine = this.calculateWinner(squares);
     if (winningLine !== null) {
       points[winningLine.mark] +=1;
-      this.ai.changeStrategy(points, winningLine.mark);
+      this.ai.revisitStrategy(winningLine.mark);
       hasEnded = true;
     } else if(this.isFull(squares)) {
       hasEnded = true;
@@ -175,10 +186,12 @@ class Game extends React.Component {
   render() {
     let status;
     let winningLine;
+    let showProgress = true;
     let squares = this.state.squares;
     if(this.state.isWelcome) {
       status = 'Let\'s play';
       squares[0] = 'O'; squares[4] = 'X'; squares[8] = 'O';
+      showProgress = false;
     } else {
       winningLine = this.calculateWinner(squares);
       if (winningLine !== null) {
@@ -196,8 +209,9 @@ class Game extends React.Component {
     // ui layout
     return (
       <div className="game">
-        <Points
-          points={this.points}
+        <Progress
+          progress={this.ai.strategyId}
+          showProgress={showProgress}
         />
         <div className="game-info">
           <div>{status}</div>
@@ -219,12 +233,8 @@ class Game extends React.Component {
         </div>
       </div>
     );
-    /**
-    FIXME: add this to game div
-    <Strategy
-      strategy={this.ai.strategyId}
-    />
-    */
+
+
   }
 
   calculateWinner(squares) {

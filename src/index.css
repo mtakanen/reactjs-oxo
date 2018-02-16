@@ -3,11 +3,9 @@ body {
   margin: 20px;
 }
 
-ol, ul {
-  padding-left: 30px;
-}
 
 .game {
+  margin: 20px;
 }
 
 .points {
@@ -123,4 +121,14 @@ ol, ul {
   margin-top: 5px;
   padding: 0;
   text-align: center;
+}
+
+.progress {
+  width: 100px;
+  height: 22px;
+  margin-bottom: 20px;
+}
+
+.bar-fg {
+  width:0%;
 }

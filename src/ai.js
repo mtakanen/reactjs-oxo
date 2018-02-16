@@ -5,6 +5,7 @@ class Ai {
     this.playMark = playMark;
     this.lines = lines;
     this.strategyId = 0;
+    this.previousWinnerMark = null;
     this.bindThis();
   }
 
@@ -42,23 +43,25 @@ class Ai {
     }
   }
 
-  changeStrategy(points, previousWinnerMark) {
-    // TODO: when ai has got a big lead, strategy drops and stays naive
-    // as long as opponent reaches points
-    let change = 0;
+  revisitStrategy(previousWinnerMark) {
+    // two consequtive wins changes strategy
+    let strategyChange = 0;
     const opponentMark = this.playMark ? 'X' : 'O';
-    const diff = points[this.playMark] - points[opponentMark];
-    if(previousWinnerMark === opponentMark &&
-        diff < 0 && this.strategyId < STRATEGIES.length-1)
-      change = 1;
-    else if(previousWinnerMark === opponentMark && this.strategyId === 0)
-      change = 1;
-    else if( previousWinnerMark === this.playMark && diff > 2 && this.strategyId > 0)
-      change = -1;
+    if (previousWinnerMark === this.previousWinnerMark) {
+        // two in a row
+        if(previousWinnerMark === opponentMark && this.strategyId < STRATEGIES.length-1)
+          strategyChange = 1;
+        else if( previousWinnerMark === this.playMark && this.strategyId > 0)
+          strategyChange = -1;
+    }
 
-    // increment/decrement strategyId
-    this.strategyId += change;
-    return change;
+    if(strategyChange !== 0) {
+        // reset previous winner mark when strategy changes
+        this.previousWinnerMark = null;
+        this.strategyId += strategyChange;
+    } else {
+      this.previousWinnerMark = previousWinnerMark;
+    }
   }
 
   any(squares) {
