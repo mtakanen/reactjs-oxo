@@ -92,10 +92,10 @@ class Board extends React.Component {
   }
 
   render() {
-    var rows=[]
+    let rows=[]
     const size = this.props.boardSize;
     for (let row = 0; row < size; row++) {
-      var cols = [];
+      let cols = [];
       for (let col = 0; col < size; col++) {
         cols.push(this.renderSquare(row*size+col));
       }
@@ -188,6 +188,7 @@ class Game extends React.Component {
     let winningLine;
     let showProgress = true;
     let squares = this.state.squares;
+    
     if(this.state.isWelcome) {
       status = 'Let\'s play';
       squares[0] = 'O'; squares[4] = 'X'; squares[8] = 'O';
@@ -233,17 +234,14 @@ class Game extends React.Component {
         </div>
       </div>
     );
-
-
   }
 
   calculateWinner(squares) {
     for (let i = 0; i < this.lines.length; i++) {
       const line = this.lines[i];
       const [a, b, c] = line.squares;
-      if (squares[a] && squares[a] === squares[b] &&
-          squares[a] === squares[c]) {
-            line.setMark(squares[a]);
+      if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+        line.setMark(squares[a]);
         return line;
       }
     }
@@ -264,8 +262,8 @@ class Lines {
   }
 
   combineLines(lineLength) {
-    var lines = []
-    var board = this.squareMatrix(this.size);
+    let lines = []
+    const board = this.squareMatrix(this.size);
 
     for( let i = 0; i < this.size; i++) {
       for (let j = 0; j < this.size; j++) {
@@ -279,7 +277,7 @@ class Lines {
   }
 
   findLines(board, i, j, n) {
-    var lines = [];
+    let lines = [];
 
     const hl = this.horiLine(board, i, j, n);
     if (hl.length === n) {
@@ -301,7 +299,7 @@ class Lines {
   }
 
   horiLine(board, i, j, n) {
-    var line = [];
+    let line = [];
     if (j > board.length - n)
       return line;
     for(let k = 0; k<n; k++)
@@ -311,7 +309,7 @@ class Lines {
   }
 
   vertLine(board, i, j, n) {
-    var line = [];
+    let line = [];
     if (i > board.length - n)
       return line;
     for(let k = 0; k<n; k++)
@@ -321,7 +319,7 @@ class Lines {
   }
 
   diagLLine(board, i, j, n) {
-    var line = [];
+    let line = [];
     if ( (i > board.length - n) || (j < n-1))
       return line;
 
@@ -333,7 +331,7 @@ class Lines {
   }
 
   diagRLine(board, i, j, n) {
-    var line = [];
+    let line = [];
     if ( (i > board.length - n) || (j > board.length-n))
       return line;
 
@@ -344,9 +342,9 @@ class Lines {
   }
 
   squareMatrix(n) {
-    var matrix = Array(n);
+    let matrix = Array(n);
     for(let i=0; i<n; i++) {
-      var row = Array(n);
+      let row = Array(n);
       for(let j=0; j<n; j++) {
         row[j] = i*n+j;
       }

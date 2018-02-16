@@ -30,8 +30,8 @@ class Ai {
       basic:    [this.winOrBlock, this.side, this.any],
       medium:   [this.opening, this.winOrBlock, this.corner, this.any],
       advanced: [this.opening, this.winOrBlock, this.center, this.corner, this.any],
-      pro:      [this.opening, this.winOrBlock, this.oppositeCorner, this.center,
-                   this.corner, this.any],
+      pro:      [this.opening, this.winOrBlock, this.oppositeCorner, this.corner,
+                 this.center, this.any],
     };
 
     const methods = strategyMethods[STRATEGIES[strategy]];
@@ -65,7 +65,7 @@ class Ai {
   }
 
   any(squares) {
-    var freeSquares = [];
+    let freeSquares = [];
     for(let i=0; i<squares.length; i++) {
       if(squares[i] === null) {
         freeSquares.push(i);
